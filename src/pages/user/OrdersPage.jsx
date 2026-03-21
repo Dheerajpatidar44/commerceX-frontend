@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, ChevronRight, Eye } from 'lucide-react';
+import { Package, ChevronRight } from 'lucide-react';
 import api from '../../api/axios';
 import EmptyState from '../../components/common/EmptyState';
 import Loader from '../../components/common/Loader';
@@ -73,7 +73,7 @@ export default function OrdersPage() {
       {!selectedOrder ? (
         <div className="space-y-4">
           {orders.map(order => (
-            <div key={order._id} className="card p-5 card-hover cursor-pointer" onClick={() => setSelectedOrder(order)}>
+            <div key={order._id} className="card p-5 card-hover">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                 <div>
                   <p className="font-semibold text-surface-900">{order._id}</p>
@@ -82,7 +82,7 @@ export default function OrdersPage() {
                 <div className="flex items-center gap-3">
                   <span className={statusColor(order.status)}>{order.status}</span>
                   <span className="font-bold text-surface-900">₹{order.totalAmount.toLocaleString()}</span>
-                  <Eye className="w-4 h-4 text-surface-400" />
+                  <span onClick={() => setSelectedOrder(order)} className="text-xs font-semibold text-brand-600 flex items-center gap-1 cursor-pointer hover:text-brand-500 transition-colors">Track Order <ChevronRight className="w-3.5 h-3.5" /></span>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">

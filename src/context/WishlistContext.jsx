@@ -5,7 +5,8 @@ import { useAuth } from './AuthContext';
 const WishlistContext = createContext(null);
 
 export function WishlistProvider({ children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const isRegularUser = isAuthenticated && user?.role === 'user';
   const [wishlist, setWishlist] = useState(() => {
     try {
       const stored = localStorage.getItem('cx_wishlist');
@@ -15,7 +16,7 @@ export function WishlistProvider({ children }) {
 
   // Fetch wishlist from server on login, clear on logout
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isRegularUser) {
       api.get('/wishlist').then(res => {
         if (res.data.success) {
           const ids = res.data.products.map(p => p._id);
@@ -27,10 +28,10 @@ export function WishlistProvider({ children }) {
       setWishlist([]);
       localStorage.removeItem('cx_wishlist');
     }
-  }, [isAuthenticated]);
+  }, [isRegularUser]);
 
   const toggleWishlist = useCallback(async (productId) => {
-    if (!isAuthenticated) return;
+    if (!isRegularUser) return;
     try {
       const { data } = await api.post('/wishlist/toggle', { productId });
       if (data.success) {
@@ -40,7 +41,7 @@ export function WishlistProvider({ children }) {
     } catch (err) {
       console.error('Toggle wishlist failed', err);
     }
-  }, [isAuthenticated]);
+  }, [isRegularUser]);
 
   const addToWishlist = useCallback(async (productId) => {
     if (wishlist.includes(productId)) return;

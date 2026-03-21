@@ -20,6 +20,7 @@ export default function Navbar() {
 
   const desktopSearchRef = useRef(null);
   const mobileSearchRef = useRef(null);
+  const profileRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -28,6 +29,9 @@ export default function Navbar() {
       }
       if (mobileSearchRef.current && !mobileSearchRef.current.contains(event.target)) {
         setShowSuggestions(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -96,12 +100,9 @@ export default function Navbar() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 to-accent-500 flex items-center justify-center">
               <span className="text-white font-bold text-sm">CX</span>
             </div>
-            <div className="hidden sm:flex items-baseline gap-2">
-              <span style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '-0.02em' }} className="font-black text-[22px] text-white leading-none italic">
-                Commerce<span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">X</span>
-              </span>
-              <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-indigo-300 bg-indigo-500/15 px-1.5 py-0.5 rounded border border-indigo-400/20 not-italic">pro</span>
-            </div>
+            <span className="font-display font-bold text-xl hidden sm:block text-white">
+              Commerce<span className="text-gradient">X</span> <span className="text-xs font-medium text-white/50">Pro</span>
+            </span>
           </Link>
 
           {/* Search Bar */}
@@ -164,7 +165,7 @@ export default function Navbar() {
             )}
 
             {isAuthenticated ? (
-              <div className="relative ml-2">
+              <div className="relative ml-2" ref={profileRef}>
                 <button
                   onClick={() => setProfileOpen(!profileOpen)}
                   className="flex items-center gap-2 p-1.5 pr-3 rounded-xl hover:bg-white/10 transition-colors text-white"
@@ -180,9 +181,7 @@ export default function Navbar() {
                       <p className="text-xs text-white/50">{user.email}</p>
                       <span className="badge-blue mt-1 capitalize">{user.role}</span>
                     </div>
-                    <Link to={getDashboardLink()} onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-white/10 transition-colors">
-                      <Package className="w-4 h-4 text-white/70" /> Dashboard
-                    </Link>
+
                     {!isAdminOrVendor && (
                       <Link to="/orders" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-white/10 transition-colors">
                         <Package className="w-4 h-4 text-white/70" /> My Orders

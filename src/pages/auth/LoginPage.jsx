@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -31,13 +32,16 @@ export default function LoginPage() {
     doLogin(form.email, form.password);
   };
 
-  const quickLogin = (email, password) => {
-    setForm({ email, password });
-    doLogin(email, password);
-  };
+
 
   return (
-    <div className="min-h-screen bg-[#0a0f1c] flex items-center justify-center p-4 overflow-hidden relative">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="min-h-screen bg-[#0a0f1c] flex items-center justify-center p-4 overflow-hidden relative"
+    >
       <button
         onClick={() => navigate('/')}
         className="absolute top-6 left-6 lg:top-10 lg:left-10 p-3 bg-[#1e293b] hover:bg-[#334155] text-white rounded-full transition-all shadow-lg border border-white/5 z-50 group"
@@ -47,19 +51,31 @@ export default function LoginPage() {
 
       <div className="w-full max-w-[850px] bg-[#1e293b] rounded-[32px] shadow-2xl overflow-hidden flex min-h-[550px] relative z-10 border border-white/5">
         {/* Left Image Section */}
-        <div className="hidden lg:block w-1/2 p-3">
-          <div className="w-full h-full relative rounded-[24px] overflow-hidden">
-            <img src="https://plus.unsplash.com/premium_photo-1683288662050-a0c17370365d?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="VR Background" className="w-full h-full object-cover" />
+        <div className="hidden lg:block w-1/2 p-3 group cursor-pointer">
+          <div className="w-full h-full relative rounded-[24px] overflow-hidden shadow-2xl">
+            <img
+              src="../src/assests/login2.png"
+              alt="VR Background"
+              className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+            />
 
-            <div className="absolute top-10 w-full flex justify-center text-white">
-              <span className="text-3xl font-display font-bold tracking-tight text-white drop-shadow-lg">
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+
+            <div className="absolute top-10 w-full flex justify-center text-white transform transition-transform duration-500 group-hover:-translate-y-1">
+              <span className="text-3xl font-display font-bold tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
                 CommerceX <span className="text-sm font-medium opacity-80 ml-1">pro</span>
               </span>
             </div>
 
-            <div className="absolute bottom-12 left-8 right-8 text-blue-500">
-              <h2 className="text-3xl font-display font-bold mb-2 leading-tight">Welcome to the<br /><span className="text-white">future of commerce</span></h2>
-              <p className="text-sm text-white/80 font-medium">Log in securely and seamlessly.</p>
+            <div className="absolute bottom-12 left-8 right-8 text-white transform transition-all duration-500 group-hover:-translate-y-2">
+              <h2 className="text-3xl font-display font-bold mb-2 leading-tight drop-shadow-lg">
+                Welcome to the<br />
+                <span className="text-blue-500">future of commerce</span>
+              </h2>
+              <p className="text-sm text-white/80 font-medium group-hover:text-white transition-colors">
+                Log in securely and seamlessly.
+              </p>
             </div>
           </div>
         </div>
@@ -105,23 +121,8 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 flex items-center gap-4 before:h-[1px] before:flex-1 before:bg-gray-600 after:h-[1px] after:flex-1 after:bg-gray-600">
-            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Quick Login</span>
-          </div>
-
-          <div className="mt-5 flex gap-3">
-            <button onClick={() => quickLogin('user@demo.com', 'demo123')} className="flex-1 flex justify-center py-2 bg-[#334155] rounded-full text-[11px] font-bold text-white hover:bg-[#475569] transition-colors shadow-sm border border-gray-600">
-              User
-            </button>
-            <button onClick={() => quickLogin('vendor@demo.com', 'demo123')} className="flex-1 flex justify-center py-2 bg-[#334155] rounded-full text-[11px] font-bold text-white hover:bg-[#475569] transition-colors shadow-sm border border-gray-600">
-              Vendor
-            </button>
-            <button onClick={() => quickLogin('admin@demo.com', 'demo123')} className="flex-1 flex justify-center py-2 bg-[#334155] rounded-full text-[11px] font-bold text-white hover:bg-[#475569] transition-colors shadow-sm border border-gray-600">
-              Admin
-            </button>
-          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

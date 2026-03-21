@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
+import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -11,6 +13,21 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user', agreeTerms: false, storeName: '' });
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
+  const [adminExists, setAdminExists] = useState(false);
+
+  // Check if admin already exists
+  
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const { data } = await api.get('/auth/check-admin');
+        setAdminExists(data.exists);
+      } catch (err) {
+        console.error('Failed to check admin status', err);
+      }
+    };
+    checkAdmin();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +48,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0f1c] flex items-center justify-center p-4 overflow-hidden relative">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="min-h-screen bg-[#0a0f1c] flex items-center justify-center p-4 overflow-hidden relative"
+    >
       <button
         onClick={() => navigate('/')}
         className="absolute top-6 left-6 lg:top-10 lg:left-10 p-3 bg-[#1e293b] hover:bg-[#334155] text-white rounded-full transition-all shadow-lg border border-white/5 z-50 group"
@@ -41,19 +64,31 @@ export default function RegisterPage() {
 
       <div className="w-full max-w-[850px] bg-[#1e293b] rounded-[32px] shadow-2xl overflow-hidden flex min-h-[550px] relative z-10 border border-white/5">
         {/* Left Image Section */}
-        <div className="hidden lg:block w-1/2 p-3">
-          <div className="w-full h-full relative rounded-[24px] overflow-hidden">
-            <img src="https://plus.unsplash.com/premium_photo-1683288662050-a0c17370365d?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="VR Background" className="w-full h-full object-cover" />
+        <div className="hidden lg:block w-1/2 p-3 group cursor-pointer">
+          <div className="w-full h-full relative rounded-[24px] overflow-hidden shadow-2xl">
+            <img 
+              src="https://plus.unsplash.com/premium_photo-1683288662050-a0c17370365d?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+              alt="VR Background" 
+              className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110" 
+            />
+            
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
 
-            <div className="absolute top-10 w-full flex justify-center text-white">
-              <span className="text-3xl font-display font-bold tracking-tight text-white drop-shadow-lg">
+            <div className="absolute top-10 w-full flex justify-center text-white transform transition-transform duration-500 group-hover:-translate-y-1">
+              <span className="text-3xl font-display font-bold tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
                 CommerceX <span className="text-sm font-medium opacity-80 ml-1">pro</span>
               </span>
             </div>
 
-            <div className="absolute bottom-12 left-8 right-8 text-white">
-              <h2 className="text-3xl font-display font-bold mb-2 leading-tight">Join the<br /><span className="text-white">commerce revolution</span></h2>
-              <p className="text-sm text-white/80 font-medium">Create your account to get started.</p>
+            <div className="absolute bottom-12 left-8 right-8 text-white transform transition-all duration-500 group-hover:-translate-y-2">
+              <h2 className="text-3xl font-display font-bold mb-2 leading-tight drop-shadow-lg">
+                Join the<br />
+                <span className="text-blue-500">commerce revolution</span>
+              </h2>
+              <p className="text-sm text-white/80 font-medium group-hover:text-white transition-colors">
+                Create your account to get started.
+              </p>
             </div>
           </div>
         </div>
@@ -101,9 +136,15 @@ export default function RegisterPage() {
                 <button type="button" onClick={() => setForm(prev => ({ ...prev, role: 'vendor' }))} className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.1em] font-bold rounded-full transition-all border ${form.role === 'vendor' ? 'bg-[#2563eb] text-white border-[#2563eb] shadow-md' : 'bg-[#334155] border-gray-600 text-white hover:bg-[#475569]'}`}>
                   Vendor
                 </button>
-                <button type="button" onClick={() => setForm(prev => ({ ...prev, role: 'admin' }))} className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.1em] font-bold rounded-full transition-all border ${form.role === 'admin' ? 'bg-[#2563eb] text-white border-[#2563eb] shadow-md' : 'bg-[#334155] border-gray-600 text-white hover:bg-[#475569]'}`}>
-                  Admin
-                </button>
+                {!adminExists ? (
+                  <button type="button" onClick={() => setForm(prev => ({ ...prev, role: 'admin' }))} className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.1em] font-bold rounded-full transition-all border ${form.role === 'admin' ? 'bg-[#2563eb] text-white border-[#2563eb] shadow-md' : 'bg-[#334155] border-gray-600 text-white hover:bg-[#475569]'}`}>
+                    Admin
+                  </button>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center text-[10px] text-gray-400 font-medium italic border border-transparent">
+                    Admin exists
+                  </div>
+                )}
               </div>
             </div>
 
@@ -125,6 +166,6 @@ export default function RegisterPage() {
           </form>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, Package, PlusCircle, ShoppingCart, BarChart3, Boxes, Store, Users, UserCheck, DollarSign, Globe } from 'lucide-react';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -89,79 +90,89 @@ export default function App() {
         <CartProvider>
           <WishlistProvider>
             <ToastProvider>
-              <Routes>
-                {/* Auth routes (no layout) */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
-                {/* Public routes (accessible to everyone) */}
-                <Route element={<PublicLayout />}>
-                  <Route path="/products" element={<ProductListingPage />} />
-                  <Route path="/product/:id" element={<ProductDetailPage />} />
-                </Route>
-
-                {/* Restricted Public routes (Admins/Vendors redirected to Dashboard) */}
-                <Route element={
-                  <PublicOnlyRoute>
-                    <PublicLayout />
-                  </PublicOnlyRoute>
-                }>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/wishlist" element={<WishlistPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/payment-success" element={<PaymentSuccessPage />} />
-                  <Route path="/payment-failure" element={<PaymentFailurePage />} />
-                  <Route path="/orders" element={<OrdersPage />} />
-                </Route>
-
-                {/* Vendor routes */}
-                <Route path="/vendor/pending" element={
-                  <ProtectedRoute allowedRoles={['vendor']}>
-                    <VendorPending />
-                  </ProtectedRoute>
-                } />
-                <Route
-                  element={
-                    <ProtectedRoute allowedRoles={['vendor']} requireApproval={true}>
-                      <DashboardLayout links={vendorLinks} title="Vendor Panel" />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-                  <Route path="/vendor/products" element={<VendorProducts />} />
-                  <Route path="/vendor/products/add" element={<VendorProductForm />} />
-                  <Route path="/vendor/products/edit/:id" element={<VendorProductForm />} />
-                  <Route path="/vendor/orders" element={<VendorOrders />} />
-                  <Route path="/vendor/inventory" element={<VendorInventory />} />
-                  <Route path="/vendor/revenue" element={<VendorRevenue />} />
-                </Route>
-
-                {/* Admin routes */}
-                <Route
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <DashboardLayout links={adminLinks} title="Admin Panel" />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                  <Route path="/admin/vendors" element={<AdminVendors />} />
-                  <Route path="/admin/users" element={<AdminUsers />} />
-                  <Route path="/admin/products" element={<AdminProducts />} />
-                  <Route path="/admin/orders" element={<AdminOrders />} />
-                  <Route path="/admin/revenue" element={<AdminRevenue />} />
-                  <Route path="/admin/api-settings" element={<AdminAPISettings />} />
-                </Route>
-
-                {/* Catch-all */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
+              <AppRoutes />
             </ToastProvider>
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
+  );
+}
+
+function AppRoutes() {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Auth routes (no layout) */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+        {/* Public routes (accessible to everyone) */}
+        <Route element={<PublicLayout />}>
+          <Route path="/products" element={<ProductListingPage />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
+        </Route>
+
+        {/* Restricted Public routes (Admins/Vendors redirected to Dashboard) */}
+        <Route element={
+          <PublicOnlyRoute>
+            <PublicLayout />
+          </PublicOnlyRoute>
+        }>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment-success" element={<PaymentSuccessPage />} />
+          <Route path="/payment-failure" element={<PaymentFailurePage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+        </Route>
+
+        {/* Vendor routes */}
+        <Route path="/vendor/pending" element={
+          <ProtectedRoute allowedRoles={['vendor']}>
+            <VendorPending />
+          </ProtectedRoute>
+        } />
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={['vendor']} requireApproval={true}>
+              <DashboardLayout links={vendorLinks} title="Vendor Panel" />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+          <Route path="/vendor/products" element={<VendorProducts />} />
+          <Route path="/vendor/products/add" element={<VendorProductForm />} />
+          <Route path="/vendor/products/edit/:id" element={<VendorProductForm />} />
+          <Route path="/vendor/orders" element={<VendorOrders />} />
+          <Route path="/vendor/inventory" element={<VendorInventory />} />
+          <Route path="/vendor/revenue" element={<VendorRevenue />} />
+        </Route>
+
+        {/* Admin routes */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <DashboardLayout links={adminLinks} title="Admin Panel" />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/vendors" element={<AdminVendors />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/revenue" element={<AdminRevenue />} />
+          <Route path="/admin/api-settings" element={<AdminAPISettings />} />
+        </Route>
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AnimatePresence>
   );
 }

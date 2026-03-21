@@ -5,11 +5,12 @@ import { useAuth } from './AuthContext';
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const isRegularUser = isAuthenticated && user?.role === 'user';
   const [enrichedCart, setEnrichedCart] = useState([]);
 
   const fetchCart = useCallback(async () => {
-    if (!isAuthenticated) {
+    if (!isRegularUser) {
       setEnrichedCart([]);
       return;
     }
@@ -21,51 +22,51 @@ export function CartProvider({ children }) {
     } catch (err) {
       console.error('Fetch cart failed', err);
     }
-  }, [isAuthenticated]);
+  }, [isRegularUser]);
 
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
 
   const addToCart = useCallback(async (productId, quantity = 1) => {
-    if (!isAuthenticated) return;
+    if (!isRegularUser) return;
     try {
       await api.post('/cart', { productId, quantity });
       await fetchCart();
     } catch (err) {
       console.error('Add to cart failed', err);
     }
-  }, [isAuthenticated, fetchCart]);
+  }, [isRegularUser, fetchCart]);
 
   const updateQuantity = useCallback(async (productId, quantity) => {
-    if (!isAuthenticated || quantity < 1) return;
+    if (!isRegularUser || quantity < 1) return;
     try {
       await api.put(`/cart/${productId}`, { quantity });
       await fetchCart();
     } catch (err) {
       console.error('Update cart quantity failed', err);
     }
-  }, [isAuthenticated, fetchCart]);
+  }, [isRegularUser, fetchCart]);
 
   const removeFromCart = useCallback(async (productId) => {
-    if (!isAuthenticated) return;
+    if (!isRegularUser) return;
     try {
       await api.delete(`/cart/${productId}`);
       await fetchCart();
     } catch (err) {
       console.error('Remove from cart failed', err);
     }
-  }, [isAuthenticated, fetchCart]);
+  }, [isRegularUser, fetchCart]);
 
   const clearCart = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isRegularUser) return;
     try {
       await api.delete('/cart');
       setEnrichedCart([]);
     } catch (err) {
       console.error('Clear cart failed', err);
     }
-  }, [isAuthenticated]);
+  }, [isRegularUser]);
 
   const cartCount = enrichedCart.reduce((s, i) => s + i.quantity, 0);
   const cartTotal = enrichedCart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);

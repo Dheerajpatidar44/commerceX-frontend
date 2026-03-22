@@ -54,7 +54,7 @@ export default function LoginPage() {
         <div className="hidden lg:block w-1/2 p-3 group cursor-pointer">
           <div className="w-full h-full relative rounded-[24px] overflow-hidden shadow-2xl">
             <img
-              src="../src/assests/login2.png"
+              src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQk0pI7RhjHN07dKkWtQm9NCHpemKFGfPLMC4vRXcfJlxd6uDhF"
               alt="VR Background"
               className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
             />

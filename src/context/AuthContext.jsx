@@ -33,11 +33,7 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       const { data } = await api.post('/auth/register', formData);
-      const newUser = data.user;
-      setUser(newUser);
-      localStorage.setItem('cx_user', JSON.stringify(newUser));
-      localStorage.setItem('cx_token', data.token);
-      return newUser;
+      return data.user;
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
       throw new Error(msg);

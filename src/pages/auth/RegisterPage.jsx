@@ -37,11 +37,9 @@ export default function RegisterPage() {
     if (!form.agreeTerms) { setError('You must agree to the Terms & Conditions'); return; }
 
     try {
-      const user = await register(form);
-      toast.success(`Welcome, ${user.name}!`);
-      if (user.role === 'admin') navigate('/admin/dashboard');
-      else if (user.role === 'vendor') navigate('/vendor/dashboard');
-      else navigate('/');
+      await register(form);
+      toast.success('Registration successful! Please log in.');
+      navigate('/login');
     } catch (err) {
       setError(err.message || 'Registration failed');
     }
